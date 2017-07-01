@@ -81,7 +81,7 @@ public class Fortuna {
                     text = childElement.text().trim();
                     print(" * a: <%s>  (%s)", childElement.attr("abs:href"), text);
                     teams = childElement.text().split(" - ");
-                    System.out.println(teams[0] + " " + teams[1]);
+                    i = 0;
                 }
 
                 if (childElement.attr("class").matches("add_bet_link betlink-(.*)"))
@@ -91,12 +91,12 @@ public class Fortuna {
                     i++;
                 }
                 childElement = null;
-                
-                
             }
             
             if (i == 6) {
-                insertRow(teams, rates);
+                if (teams.length == 2) {
+                    insertRow(teams, rates);
+                }
                 i = 0;
                 teams = null;
             }
