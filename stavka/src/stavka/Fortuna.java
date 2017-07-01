@@ -5,11 +5,10 @@
  */
 package stavka;
 
+import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.logging.Level;
@@ -44,32 +43,56 @@ public class Fortuna {
         
         createConnection();
         
-        String url = "https://www.ifortuna.sk/sk/stavkovanie/futbal?limit=100";
+        /*String url = "https://www.ifortuna.sk/sk/stavkovanie/futbal?nolimit";
         print("Fetching %s...", url);
-
         Document doc = null;
+        
         try {
             doc = Jsoup.connect(url).get();
         } catch (IOException ex) {
             Logger.getLogger(Fortuna.class.getName()).log(Level.SEVERE, null, ex);
+        }*/
+
+        File input = new File("fortuna.txt");
+        Document doc = null;
+        
+        try {
+            doc = Jsoup.parse(input, "UTF-8");
+        } catch (IOException ex) {
+            Logger.getLogger(Fortuna.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        String title = doc.title();
-        Elements links = doc.select("a[href][class]");
+        Elements links = doc.select("td[class]");
+        Elements childElement = null;
 
         print("\nLinks: (%d)", links.size());
         for (Element link : links) {
-            if (link.attr("class").equals("bet_item_detail_href"))
+            if (link.attr("class").matches("col_bet  col_bet_empty"))
             {
-                text = link.text().trim();
-                print(" * a: <%s>  (%s)", link.attr("abs:href"), text);
-                teams = link.text().split(" - ");
-            }
-            if (link.attr("class").matches("add_bet_link betlink-(.*)"))
-            {
-                print(" * a: <%s>  (%s)", link.attr("abs:href"), link.text().trim());
-                rates[i] = Double.valueOf(link.text().trim());
+                rates[i] = 0.0;
                 i++;
+            } else if  ((link.attr("class").equals("col_title")) || (link.attr("class").matches("col_bet(.*)"))){
+                childElement = link.select("a");
+            } 
+            
+            if (childElement != null) {
+                if (childElement.attr("class").equals("bet_item_detail_href"))
+                {
+                    text = childElement.text().trim();
+                    print(" * a: <%s>  (%s)", childElement.attr("abs:href"), text);
+                    teams = childElement.text().split(" - ");
+                    System.out.println(teams[0] + " " + teams[1]);
+                }
+
+                if (childElement.attr("class").matches("add_bet_link betlink-(.*)"))
+                {
+                    print(" * a: <%s>  (%s)", childElement.attr("abs:href"), childElement.text().trim());
+                    rates[i] = Double.valueOf(childElement.text().trim());
+                    i++;
+                }
+                childElement = null;
+                
+                
             }
             
             if (i == 6) {
