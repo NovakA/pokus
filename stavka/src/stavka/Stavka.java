@@ -5,6 +5,8 @@
  */
 package stavka;
 
+import java.io.IOException;
+
 /**
  *
  * @author adam
@@ -13,9 +15,10 @@ public class Stavka {
 
     /**
      * @param args the command line arguments
+     * @throws java.io.IOException
      */
-    public static void main(String[] args) {
-        // TODO code application logic here
+    public static void main(String[] args) throws IOException {
+        Fortuna fortuna = new Fortuna();
     }
     
 }
