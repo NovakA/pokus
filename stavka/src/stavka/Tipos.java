@@ -21,20 +21,19 @@ import static stavka.Stavka.statement;
  *
  * @author adam
  */
-public class Fortuna {
+public class Tipos {
     
-    private static final String tableName = "FORTUNA";
+    private static final String tableName = "TIPOS";
     private static int counter = 1;
     
-    public Fortuna () {
+    public Tipos () {
         
         String[] teams = null;
         double[] rates = new double[6];
         String text;
         int i = 0;
-
-
-        File input = new File("fortuna.txt");
+ 
+        File input = new File("tipos.txt");
         Document doc = null;
         
         try {
@@ -43,36 +42,35 @@ public class Fortuna {
             Logger.getLogger(Fortuna.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        Elements links = doc.select("td[class]");
-        Elements childElement = null;
+        Elements links = doc.select("tr[class]");
+        Elements childElements = null;
 
         System.out.print("Links: " + links.size());
         for (Element link : links) {
-            if (link.attr("class").matches("col_bet  col_bet_empty"))
-            {
-                rates[i] = 0.0;
-                i++;
-            } else if  ((link.attr("class").equals("col_title")) || (link.attr("class").matches("col_bet(.*)"))){
-                childElement = link.select("a");
-            } 
+            childElements = link.select("td");
             
-            if (childElement != null) {
-                if (childElement.attr("class").equals("bet_item_detail_href"))
+            for (Element childElement : childElements) {
+                if (childElement.attr("class").matches("center"))
+                {
+                    rates[i] = 0.0;
+                    i++;
+                } else 
+                if (childElement.attr("class").equals("match"))
                 {
                     text = childElement.text().trim();
                     System.out.print("\n" + text);
                     teams = childElement.text().split(" - ");
                     i = 0;
-                }
-
-                if (childElement.attr("class").matches("add_bet_link betlink-(.*)"))
+                } else 
+                if (childElement.attr("class").matches("rate"))
                 {
-                    System.out.print(" " + childElement.text().trim());
-                    rates[i] = Double.valueOf(childElement.text().trim());
+                    text = childElement.text().replace(",", ".");
+                    System.out.print(" " + text);
+                    rates[i] = Double.valueOf(text);
                     i++;
                 }
-                childElement = null;
             }
+            
             
             if (i == 6) {
                 if (teams.length == 2) {
