@@ -49,7 +49,8 @@ public class Stavka {
         createConnection();
         
         //Fortuna fortuna = new Fortuna();
-        Tipos tipos = new Tipos();
+        //Tipos tipos = new Tipos();
+        Nike nike = new Nike();
         
         shutdown();
     }

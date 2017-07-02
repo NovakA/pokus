@@ -48,7 +48,7 @@ public class Fortuna {
 
         System.out.print("Links: " + links.size());
         for (Element link : links) {
-            if (link.attr("class").matches("col_bet  col_bet_empty"))
+            if (link.attr("class").equals("col_bet  col_bet_empty"))
             {
                 rates[i] = 0.0;
                 i++;
@@ -60,14 +60,12 @@ public class Fortuna {
                 if (childElement.attr("class").equals("bet_item_detail_href"))
                 {
                     text = childElement.text().trim();
-                    System.out.print("\n" + text);
                     teams = childElement.text().split(" - ");
                     i = 0;
                 }
 
                 if (childElement.attr("class").matches("add_bet_link betlink-(.*)"))
                 {
-                    System.out.print(" " + childElement.text().trim());
                     rates[i] = Double.valueOf(childElement.text().trim());
                     i++;
                 }

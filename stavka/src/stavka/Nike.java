@@ -21,19 +21,20 @@ import static stavka.Stavka.statement;
  *
  * @author adam
  */
-public class Tipos {
+public class Nike {
     
-    private static final String tableName = "TIPOS";
+    private static final String tableName = "NIKE";
     private static int counter = 1;
     
-    public Tipos () {
+    public Nike () {
         
-        String[] teams = null;
+        String[] teams = new String[2];
         double[] rates = new double[6];
         String text;
         int i = 0;
- 
-        File input = new File("tipos.txt");
+
+
+        File input = new File("nike.txt");
         Document doc = null;
         
         try {
@@ -42,40 +43,48 @@ public class Tipos {
             Logger.getLogger(Fortuna.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        Elements links = doc.select("tr[class]");
+        Elements links = doc.select("td[class]");
         Elements childElements = null;
 
         System.out.print("Links: " + links.size());
         for (Element link : links) {
-            childElements = link.select("td");
+            if (link.attr("class").equals("super"))
+            {
+                childElements = link.select("span");
+                for (Element childElement : childElements) {
+                    if (childElement.attr("class").equals("super-s1 home "))
+                        teams[0] = childElement.text();
+                    
+                    if (childElement.attr("class").equals("super-s1 away"))
+                        teams[1] = childElement.text();
+                }
+                i = 0;
+            }
             
-            for (Element childElement : childElements) {
-                if (childElement.attr("class").equals("center"))
-                {
-                    rates[i] = 0.0;
-                    i++;
-                } else 
-                if (childElement.attr("class").equals("match"))
-                {
-                    text = childElement.text().trim();
-                    teams = childElement.text().split(" - ");
-                    i = 0;
-                } else 
-                if (childElement.attr("class").equals("rate"))
-                {
-                    text = childElement.text().replace(",", ".");
-                    rates[i] = Double.valueOf(text);
-                    i++;
+            if (link.attr("class").matches("type (.*)") && teams[1] != null)
+            {
+                childElements = link.select("a");
+                for (Element childElement : childElements) {
+                    if (childElement.attr("tipId").matches("TIP_."))
+                    {
+                        rates[i] = Double.valueOf(childElement.text());
+                        i++;
+                    }
                 }
             }
             
             
             if (i == 6) {
                 if (teams.length == 2) {
+                    System.out.print("\n" + teams[0] + " - ");
+                    System.out.print(teams[1]);
+                    for (int j = 0; j < 6; j++) System.out.print( " " + rates[j]);
+                    
                     insertRow(teams, rates);
                 }
                 i = 0;
-                teams = null;
+                teams[0] = null;
+                teams[1] = null;
             }
         }
     }
